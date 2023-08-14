@@ -5,6 +5,8 @@ import unicodedata
 import string
 import glob
 import torch
+import torch.nn as nn
+import matplotlib as plt
 import random
 
 ### utils ###
@@ -47,3 +49,24 @@ def line_to_tensor(line):
 
 
 ### model ###
+
+class RNN(nn.Module):
+    def __init__(self, input_size, output_size, hidden_size):
+        super(RNN,self).__init__()
+
+        self.hidden_size = hidden_size
+        self.i2h = nn.Linear(input_size + hidden_size, hidden_size) # input to hidden
+        self.i2o = nn.Linear(input_size + hidden_size, output_size) # input to output
+        self.softmax = nn.LogSoftmax(dim = 1)
+    def forward(self, input_tensor, hidden_tensor):
+        combined = torch.cat((input_tensor, hidden_tensor), 1)
+        hidden = self.i2h(combined)
+        output = self.i2o(combined)
+        output = self.softmax(output)
+        return output, hidden
+
+    def init_hidden(self):
+        return torch.zeros(1,self.hidden_size)
+
+category_lines, all_categories = load_data('data/names/*.txt') # 读取数据
+
