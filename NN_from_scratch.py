@@ -118,7 +118,7 @@ for t in range(epochs):
 print("Done!")
 
 ### save and load the model ###
-
+torch.save(model.state_dict(), "model.pth")
 
 
 
