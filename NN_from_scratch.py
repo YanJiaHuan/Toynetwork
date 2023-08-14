@@ -31,13 +31,53 @@ class NuralNetwork(nn.Module):
 model = NuralNetwork().to(device)
 
 ### use the model ###
-X = torch.rand(1,28,28, device = device)
-logits = model(X)
-pred_probab = nn.Softmax(dim = 1)(logits) # dim = 1 表示按行softmax
-y_pred = pred_probab.argmax(1) # 返回每一行最大值的索引
-print(f"Predicted class: {y_pred}")
+# X = torch.rand(1,28,28, device = device)
+# logits = model(X)
+# pred_probab = nn.Softmax(dim = 1)(logits) # dim = 1 表示按行softmax
+# y_pred = pred_probab.argmax(1) # 返回每一行最大值的索引
+# print(f"Predicted class: {y_pred}")
 
 ### test the model on a batch of data ###
+# x = torch.ones(5)
+# y = torch.zeros(3)
+# w = torch.randn(5,3, requires_grad = True)
+# print(w.grad)
+# b = torch.randn(3, requires_grad = True)
+# z = torch.matmul(x,w) + b
+# loss = nn.functional.binary_cross_entropy_with_logits(z,y)
+# loss.backward()
+# print(z.requires_grad)
+# print(w.grad)
+
+### training ###
+from torchvision.transforms import ToTensor
+
+training_data = datasets.FashionMNIST(
+        root = "data",
+        train = True,
+        download = True,
+        transform = ToTensor()
+        )
+test_data = datasets.FashionMNIST(
+        root = "data",
+        train = False,
+        download = True,
+        transform = ToTensor()
+        )
+train_dataloader = DataLoader(training_data, batch_size = 64)
+test_dataloader = DataLoader(test_data, batch_size = 64)
+model = NuralNetwork().to(device)
+
+## hyperparameters ##
+learning_rate = 1e-3
+batch_size = 64
+epochs = 5
+loss_fn = nn.CrossEntropyLoss()
+
+## optimizer ##
+optimizer = torch.optim.SGD(model.parameters(), lr = learning_rate)
+
+## training loop ##
 
 
 
