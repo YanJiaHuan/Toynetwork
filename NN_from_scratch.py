@@ -10,7 +10,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using {device} device")
 
 ### Class ###
-class NuralNetwork(nn.Module):
+class NeuralNetwork(nn.Module):
     def __init__(self):
         super().__init__() #用了super之后，就可以直接用nn.Module里的方法了
         self.flatten = nn.Flatten() # flatten 会把一个多维的tensor展平成一个一维的tensor
@@ -19,8 +19,12 @@ class NuralNetwork(nn.Module):
                 nn.ReLU(), # 传统的激活函数
                 nn.Linear(512, 512),
                 nn.ReLU(),
-                nn.Linear(512, 10),
-                nn.ReLU()
+                nn.Linear(512,256),
+                nn.ReLU(),
+                nn.Linear(256,64),
+                nn.ReLU(),
+                nn.Linear(64, 10),
+                nn.ReLU(),
                 )
     def forward(self,x):
         x = self.flatten(x)
@@ -28,7 +32,7 @@ class NuralNetwork(nn.Module):
         return logits
 
 ### init the model ###
-model = NuralNetwork().to(device)
+model = NeuralNetwork().to(device)
 
 ### use the model ###
 # X = torch.rand(1,28,28, device = device)
@@ -66,12 +70,12 @@ test_data = datasets.FashionMNIST(
         )
 train_dataloader = DataLoader(training_data, batch_size = 64)
 test_dataloader = DataLoader(test_data, batch_size = 64)
-model = NuralNetwork().to(device)
+model = NeuralNetwork().to(device)
 
 ## hyperparameters ##
-learning_rate = 1e-3
+learning_rate = 5e-3
 batch_size = 64
-epochs = 5
+epochs = 50
 loss_fn = nn.CrossEntropyLoss()
 
 ## optimizer ##
@@ -118,7 +122,7 @@ for t in range(epochs):
 print("Done!")
 
 ### save and load the model ###
-torch.save(model.state_dict(), "model.pth")
+torch.save(model.state_dict(), "Model/model.pth")
 
 
 
