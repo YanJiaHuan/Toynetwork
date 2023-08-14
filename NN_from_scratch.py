@@ -27,8 +27,17 @@ class NuralNetwork(nn.Module):
         logits = self.linear_relu_stack(x)
         return logits
 
+### init the model ###
+model = NuralNetwork().to(device)
 
+### use the model ###
+X = torch.rand(1,28,28, device = device)
+logits = model(X)
+pred_probab = nn.Softmax(dim = 1)(logits) # dim = 1 表示按行softmax
+y_pred = pred_probab.argmax(1) # 返回每一行最大值的索引
+print(f"Predicted class: {y_pred}")
 
+### test the model on a batch of data ###
 
 
 
