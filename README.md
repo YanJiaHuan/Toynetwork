@@ -1,5 +1,5 @@
 # Toynetwork
-
+This is a repo for building NNs from scratch.
 ## RNN
 ### Advantages
 - Can handle variable length sequences.
