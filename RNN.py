@@ -6,7 +6,7 @@ import string
 import glob
 import torch
 import torch.nn as nn
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import random
 
 ### utils ###
