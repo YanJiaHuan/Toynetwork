@@ -54,5 +54,25 @@ print("Train size:", len(train_datasets))
 print("Valid size:", len(valid_datasets))
 print("Test size:", len(test_datasets))
 
-# Define the fields associated with the sequences.
+### network ###
+class Encoder(nn.Module):
+    pass
+
+class Decoder(nn.Module):
+    pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
