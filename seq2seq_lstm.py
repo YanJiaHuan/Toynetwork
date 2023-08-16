@@ -143,8 +143,38 @@ encoder_net = Encoder(input_size_encoder,encoder_embedding_size,hidden_size,num_
 decoder_net = Decoder(input_size_decoder,decoder_embedding_size,hidden_size,output_size,num_layers,dec_dropout).to(device)
 
 model = seq2seq(encoder_net,decoder_net).to(device)
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
+pad_idx = english.vocab.stoi['<pad>']
+loss_fn = nn.CrossEntropyLoss(ignore_index=pad_idx)
 
+test_sentence = "ein boot mit mehreren männern darauf wird von einem großen pferdegespann ans ufer gezogen."
+# a boat with several men on it is pulled ashore by a large team of horses.
+for epoch in range(num_epochs):
+    print(f"[Epoch {epoch} / {num_epochs}]")
+
+    model.eval()
+    translated_sentence = translate_sentence(model, test_sentence, german, english, device, max_length=50)
+    print('Translated example sentence: \n', translated_sentence)
+    for batch_idx, batch in enumerate(train_iterator):
+        input_data = batch.src.to(device)
+        target = batch.trg.to(device)
+
+        output = model(input_data, target)
+        # output shape: (trg_len, batch_size, output_dim)
+        output = output[1:].reshape(-1, output.shape[2])
+        target = target[1:].reshape(-1)
+
+        optimizer.zero_grad()
+        loss = loss_fn(output, target)
+        loss.backward()
+
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
+
+        optimizer.step()
+
+        writer.add_scalar('Training loss', loss, global_step=step)
+        step += 1
 
 
 
