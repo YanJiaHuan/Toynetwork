@@ -2,8 +2,7 @@
 import torch
 import torch.optim as optim
 import torch.nn as nn
-from torchtext.datasets import Multi30k
-from torchtext import data, datasets
+from datasets import load_dataset
 import numpy as np
 import spacy
 import random
@@ -19,19 +18,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 ### help functions ###
 sos_tok = '<sos>'
 eos_tok = '<eos>'
-def tokenize_ger(text):
-    return [tok.text for tok in spacy_ger.tokenizer(text)]
-
-def tokenize_eng(text):
-    return [tok.text for tok in spacy_eng.tokenizer(text)]
-
-text = 'I like apples'
-doc = spacy_eng(text)
-for token in doc:
-    print(token.text, token.pos_, token.dep_)
-
-train_data, valid_data, test_data = Multi30k(root='.data',split=('train', 'valid', 'test'), language_pair=('de', 'en'))
-
+dataset = load_dataset("bentrevett/multi30k")
+print(dataset)
 
 class TextDatasets(torch.utils.data.Dataset):
     def __init__(self, raw_data):
