@@ -24,6 +24,7 @@ reason why they add a positional encoding to the input to make sure the order do
 
 <img src="http://chart.googleapis.com/chart?cht=tx&chl= Attention(Q,K,V) = softmax(\frac{QK^T}{\sqrt{d_k}})" style="border:none;">  
 
+
 ### Decoder part
 The difference in decoder transformer block is the value and key are from the encoder part, and the query is from the previous layer of decoder part. 
 
