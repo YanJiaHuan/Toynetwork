@@ -46,6 +46,21 @@ class SelfAttention(nn.Module):
         out = self.fc_out(out) # map the embed_size to embed_size
         return out
 
+class TransformerBlock(nn.Module):
+    def __int__(self,embed_size,heads,dropout,forward_expansion):
+        super(TransformerBlock,self).__init__()
+        self.attention = SelfAttention(embed_size,heads)
+        self.norm1 = nn.LayerNorm(embed_size)
+        self.norm2 = nn.LayerNorm(embed_size)
+        # 假如只定义一个norm1会怎么样？技术上可以，但由于nomalization layer 里也有一点可学习的参数，但两处地方，显然这个参数是需要不同的
+
+        self.feed_forward = nn.Sequential(
+            nn.Linear(embed_size, forward_expansion*embed_size),
+            nn.ReLU(),
+            nn.Linear(forward_expansion*embed_size,embed_size)
+        )
+        # 顶级💩
+
 
 
 
