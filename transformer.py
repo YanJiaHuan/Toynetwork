@@ -60,6 +60,115 @@ class TransformerBlock(nn.Module):
             nn.Linear(forward_expansion*embed_size,embed_size)
         )
         # 顶级💩
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self,value,key,query,mask):
+        attention = self.attention(value,key,query,mask)
+        x = self.norm1(attention + query) # residual connection of attention and query, with a normalization layer
+        x = self.dropout(x)
+        x2 = self.feed_forward(x) # x after feed forward block
+        out = self.norm2(x2 + x) # residual connection of x and x2, with a normalization layer
+        out = self.dropout(out)
+        return out
+
+class Encoder(nn.Module):
+    def __init__(
+            self,
+            src_vocab_size,# 词典大小
+            embed_size, # 词向量维度 相当于用多大的向量去表示每个单词
+            num_layers,
+            heads,
+            device,
+            forward_expansion,
+            dropout,
+            max_length
+    ):
+        super(Encoder,self).__init__()
+        self.embed_size = embed_size
+        self.device = device
+        self.word_embedding = nn.Embedding(src_vocab_size,embed_size)
+        # nn.embedding 是一个index->vector的映射，这里的index是单词的index，vector是词向量
+        self.position_embedding = nn.Embedding(max_length,embed_size)
+        # 这个应该很合理，就是让模型学会 第一，第二...第max_length个单词的位置所代表的意义
+        self.layers = nn.ModuleList(
+            [
+                TransformerBlock(
+                    embed_size,
+                    heads,
+                    dropout=dropout,
+                    forward_expansion=forward_expansion
+                )
+                for _ in range(num_layers)
+            ]
+        )
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self,x,mask):
+        N,seq_length = x.shape
+        potisions = torch.arange(0,seq_length).expand(N,seq_length).to(self.device)
+        # what is .expand here for? torch.arange(0,N) 只是一个一维的向量，输入会有个N的batch纬度
+        out = self.dropout(self.word_embedding(x) + self.position_embedding(potisions)) # word embedding + position embedding(redidual) and dropout
+        for layer in self.layers:
+            out = layer(out,out,out,mask)
+        return out
+
+class DecoderBlock(nn.Module):
+    def __init__(self,embed_size, heads, forward_expansion, dropout, device):
+        super(DecoderBlock,self).__init__()
+        self.attention = SelfAttention(embed_size,heads)
+        self.norm = nn.LayerNorm(embed_size)
+        self.transformer_block = TransformerBlock(embed_size,heads,dropout,forward_expansion)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, value, key, src_mask, trg_mask):
+        # src_mask: mask of source sentence, to prevent attention to padding token
+        # trg_mask: mask of target sentence, to prevent decoder to attend future token (when predict the Nth, can only attend the first N-1)
+        attention = self.attention(x,x,x,trg_mask)
+        query_out = self.dropout(self.norm(attention + x)) # 那个单独出来的query 后面要跟着encoder 出来的value和key，进正常的transformer block
+        out = self.transformer_block(value,key,query_out,src_mask)
+        # value, key: encoder output
+        return out
+
+
+class Decoder(nn.Module):
+    def __init__(
+            self,
+            trg_vocab_size,
+            embed_size,
+            num_layers,
+            heads,
+            forward_expansion,
+            dropout,
+            device,
+            max_length
+    ):
+        super(Decoder,self).__init__()
+        self.device = device
+        self.word_embedding = nn.Embedding(trg_vocab_size,embed_size)
+        self.position_embedding = nn.Embedding(max_length,embed_size)
+        self.layers = nn.ModuleList(
+            [
+                DecoderBlock(embed_size,heads,forward_expansion,dropout,device)
+                for _ in range(num_layers)
+            ]
+        )
+        self.fc_out = nn.Linear(embed_size,trg_vocab_size)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, enc_out, src_mask, trg_mask):
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
