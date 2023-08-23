@@ -165,7 +165,18 @@ class Decoder(nn.Module):
         out = self.fc_out(x)
         return out
 
-
+class Transformer(nn.Module):
+    def __int__(
+            self,
+            src_vocab_size,
+            trg_vocab_size,
+            src_pad_idx,
+            trg_pad_idx,
+            embed_size=256, # 这个参数就是每个单词多大的向量去表示
+            num_layers=6, # 这个参数告诉有多少个transformer block在encoder，decoder里
+            forward_expansion=4, # 这个参数只是让某一层的映射从1对1，变成1对4，再4对1， 相当于中间有了某种变化
+            heads=8, # 这个参数越大，理论上训练时间越长，这个越大，每个注意力块就越小，说明越关注细节(因为head*head_dim是常量，而这个head_dim决定qkv的大小)
+    ):
 
 
 
