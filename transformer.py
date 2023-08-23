@@ -34,6 +34,18 @@ class SelfAttention(nn.Module):
         if mask is not None:
             energy = energy.masked_fill(mask==0,float("-1e20"))
         # 实际上是用一个很小的值去填充成一个三角矩阵，最开始是全mask，到最后是只mask最后一个词
+        attention = torch.softmax(energy/(self.embed_size**(1/2)),dim=3)
+        # softmax(dim=3) 指对第三维度进行softmax-->all elements in (0,1) and sum to 1
+        # 为什么是对第三维度进行softmax？因为这个纬度的数量=单词(element)的数量，我的注意力要分配的是每个单词的权重，所以我要对每个单词进行softmax,因为这个energy tensor，dim0
+        # 是batch size，dim1是head，dim2是query_len，dim3是key_len, 实际上query_len = key_len
+        out = torch.einsum("nhql,nlhd->nqhd",[attention,values])
+        # attention shape: (N, heads, query_len, key_len)
+        # values shape: (N, value_len, heads, heads_dim)
+        # out shape: (N, query_len, heads, heads_dim)
+        out = out.reshape(N,query_len,self.heads*self.head_dim) # concat heads
+        out = self.fc_out(out) # map the embed_size to embed_size
+        return out
+
 
 
 
