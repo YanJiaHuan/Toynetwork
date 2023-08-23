@@ -206,6 +206,25 @@ class Transformer(nn.Module):
         self.trg_pad_idx = trg_pad_idx
         self.device = device
 
+    def make_src_mask(self,src):
+        src_mask = (src != self.src_pad_idx).unsqueeze(1).unsqueeze(2)
+        # src_mask shape: (N,1,1,src_len)
+        return src_mask.to(self.device)
+    # this function prevent attention to padding token
+
+    def make_trg_mask(self,trg):
+        N, trg_len = trg.shape
+        trg_mask = torch.tril(torch.ones((trg_len,trg_len))).expand(N,1,trg_len,trg_len)
+        return trg_mask.to(self.device)
+
+    def forward(self,src,trg):
+        src_mask = self.make_src_mask(src)
+        trg_mask = self.make_trg_mask(trg)
+        enc_src = self.encoder(src,src_mask)
+        out = self.decoder(trg,enc_src,src_mask,trg_mask)
+        return out
+
+
 
 
 
