@@ -156,6 +156,15 @@ class Decoder(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, enc_out, src_mask, trg_mask):
+        N, seq_length = x.shape
+        positions = torch.arange(0,seq_length).expand(N,seq_length).to(self.device)
+        x = self.word_embedding(x) + self.position_embedding(positions)
+        x = self.dropout(x)
+        for layer in self.layers:
+            x = layer(x,enc_out,enc_out,src_mask,trg_mask)
+        out = self.fc_out(x)
+        return out
+
 
 
 
