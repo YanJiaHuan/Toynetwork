@@ -176,7 +176,36 @@ class Transformer(nn.Module):
             num_layers=6, # 这个参数告诉有多少个transformer block在encoder，decoder里
             forward_expansion=4, # 这个参数只是让某一层的映射从1对1，变成1对4，再4对1， 相当于中间有了某种变化
             heads=8, # 这个参数越大，理论上训练时间越长，这个越大，每个注意力块就越小，说明越关注细节(因为head*head_dim是常量，而这个head_dim决定qkv的大小)
+            #有说法是 head越大，模型越能从多个角度学习(相当CNN里多个卷积核)
+            dropout=0, # 用于防止过拟合
+            device="cuda" if torch.cuda.is_available() else "cpu",
+            max_length=100
     ):
+        super(Transformer,self).__init__()
+        self.encoder = Encoder(
+            src_vocab_size,
+            embed_size,
+            num_layers,
+            heads,
+            device,
+            forward_expansion,
+            dropout,
+            max_length
+        )
+        self.decoder = Decoder(
+            trg_vocab_size,
+            embed_size,
+            num_layers,
+            heads,
+            forward_expansion,
+            dropout,
+            device,
+            max_length
+        )
+        self.src_pad_idx = src_pad_idx
+        self.trg_pad_idx = trg_pad_idx
+        self.device = device
+
 
 
 
