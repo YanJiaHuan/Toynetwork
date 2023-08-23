@@ -27,6 +27,9 @@ class SelfAttention(nn.Module):
         values = values.reshape(N,value_len,self.heads,self.head_dim)
         keys = keys.reshape(N,key_len,self.heads,self.head_dim)
         queries = queries.reshape(N,query_len,self.heads,self.head_dim)
+        values = self.values(values)
+        keys = self.keys(keys)
+        queries = self.queries(queries)
         energy = torch.einsum("nqhd,nkhd->nhqk",[queries,keys])
         # queries shape: (N, query_len, heads, heads_dim)
         # keys shape: (N, key_len, heads, heads_dim)
@@ -47,7 +50,7 @@ class SelfAttention(nn.Module):
         return out
 
 class TransformerBlock(nn.Module):
-    def __int__(self,embed_size,heads,dropout,forward_expansion):
+    def __init__(self,embed_size,heads,dropout,forward_expansion):
         super(TransformerBlock,self).__init__()
         self.attention = SelfAttention(embed_size,heads)
         self.norm1 = nn.LayerNorm(embed_size)
@@ -166,19 +169,19 @@ class Decoder(nn.Module):
         return out
 
 class Transformer(nn.Module):
-    def __int__(
+    def __init__(
             self,
             src_vocab_size,
             trg_vocab_size,
             src_pad_idx,
             trg_pad_idx,
+            device,
             embed_size=256, # 这个参数就是每个单词多大的向量去表示
             num_layers=6, # 这个参数告诉有多少个transformer block在encoder，decoder里
             forward_expansion=4, # 这个参数只是让某一层的映射从1对1，变成1对4，再4对1， 相当于中间有了某种变化
             heads=8, # 这个参数越大，理论上训练时间越长，这个越大，每个注意力块就越小，说明越关注细节(因为head*head_dim是常量，而这个head_dim决定qkv的大小)
             #有说法是 head越大，模型越能从多个角度学习(相当CNN里多个卷积核)
             dropout=0, # 用于防止过拟合
-            device="cuda" if torch.cuda.is_available() else "cpu",
             max_length=100
     ):
         super(Transformer,self).__init__()
@@ -223,6 +226,20 @@ class Transformer(nn.Module):
         enc_src = self.encoder(src,src_mask)
         out = self.decoder(trg,enc_src,src_mask,trg_mask)
         return out
+
+# train
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+x = torch.tensor([[1,5,6,4,3,9,5,2,0],[1,8,7,3,4,5,6,7,2]]).to(device)
+
+trg = torch.tensor([[1,7,4,3,5,9,2,0],[1,5,6,2,4,7,6,2]]).to(device)
+src_pad_idx = 0
+trg_pad_idx = 0
+src_vocab_size = 10
+trg_vocab_size = 10
+model = Transformer(src_vocab_size,trg_vocab_size,src_pad_idx,trg_pad_idx,device = device).to(device)
+out = model(x,trg[:,:-1])
+print(out.shape)
+
 
 
 
