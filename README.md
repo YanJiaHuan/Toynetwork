@@ -29,12 +29,12 @@ reason why they add a positional encoding to the input to make sure the order do
 The difference in decoder transformer block is the value and key are from the encoder part, and the query is from the previous layer of decoder part.  
 The first attention in encoder part is masked-attention, need to matmul to a triangular zero matrix.  
 
-Step1: input x1 into 3 different parts: query, key, value, output y1.
-Step2: res(y1 and x1 )into a normalization layer, get y2.
-Step3: attention(encoder_output_key, encoder_output_value, y2) get y3.
-Step4: res(y2 and y3) into a normalization layer, get y4.
-Step5: y4 into a feed forward network, get y5.
-Step6: res(y4 and y5) into a normalization layer, get y6, this y6 is the output of a decoder layer.
+Step1: input x1 into 3 different parts: query, key, value, output y1.  
+Step2: res(y1 and x1 )into a normalization layer, get y2.  
+Step3: attention(encoder_output_key, encoder_output_value, y2) get y3.  
+Step4: res(y2 and y3) into a normalization layer, get y4.  
+Step5: y4 into a feed forward network, get y5.  
+Step6: res(y4 and y5) into a normalization layer, get y6, this y6 is the output of a decoder layer.  
 
 ### Positional encoding
 Nothing but y = x + pos_encoidng(seq_length), only to embedd the position information into the input.
