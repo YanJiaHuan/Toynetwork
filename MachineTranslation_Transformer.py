@@ -100,15 +100,16 @@ log_step = 100
 ## process data ##
 def process_fn(examples):
     # Tokenize the texts
-    result = en_tokenizer(examples['en'], padding=True, truncation=True,max_length=128,return_tensors='pt')
-    result['labels'] = ge_tokenizer(examples['de'], padding=True, truncation=True, max_length=128,return_tensors='pt')['input_ids']
+    result = en_tokenizer(examples['en'], padding='max_length', truncation=True,max_length=128,return_tensors='pt')
+    result['labels'] = ge_tokenizer(examples['de'], padding='max_length', truncation=True, max_length=128,return_tensors='pt')['input_ids']
     return result
 
 data = datasets.load_dataset(dataset_id, 'de-en')
 data = data.map(process_fn, batched=True)
 train_data, val_data, test_data = data['train'], data['validation'], data['test']
 
-
+for data in train_data:
+    print(len(data['input_ids']))
 train_data.set_format(type='torch', columns=['input_ids','attention_mask','labels'])
 
 from torch.utils.data import DataLoader
