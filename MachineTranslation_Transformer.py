@@ -59,10 +59,13 @@ class Transformer(nn.Module):
         self.max_length = max_length
 
     def forward(self,src,trg):
-        src_seq_length, N = len(src), 1
-        trg_seq_length, N = len(trg), 1
-        src_mask = src.transpose(0,1) == self.src_pad_idx
-        trg_mask = self.transformer.generate_square_subsequent_mask(trg_seq_length).to(self.device)
+        src_seq_length, N = src.shape
+        trg_seq_length, N = trg.shape
+        # For src_mask
+        src_mask = (input_ids != self.src_pad_idx).unsqueeze(-2).to(device)  # Shape: (batch_size, 1, sequence_length)
+        # For trg_mask
+
+        trg_mask = self.transformer.generate_square_subsequent_mask(trg_seq_length).to(device)
         src_positions = (torch.arange(0,src_seq_length).unsqueeze(1).expand(src_seq_length,N).to(self.device))
         trg_positions = (torch.arange(0,trg_seq_length).unsqueeze(1).expand(trg_seq_length,N).to(self.device))
         src_embedded = self.dropout(self.src_word_embedding(src) + self.src_position_embedding(src_positions)) # input
@@ -81,7 +84,7 @@ class Transformer(nn.Module):
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 ## hyperparameters ##
 num_epochs = 10
-learning_rate = 3e-4
+learning_rate = 3e-6
 batch_size = 32
 src_vocab_size = en_tokenizer.vocab_size
 trg_vocab_size = ge_tokenizer.vocab_size
@@ -108,8 +111,6 @@ data = datasets.load_dataset(dataset_id, 'de-en')
 data = data.map(process_fn, batched=True)
 train_data, val_data, test_data = data['train'], data['validation'], data['test']
 
-for data in train_data:
-    print(len(data['input_ids']))
 train_data.set_format(type='torch', columns=['input_ids','attention_mask','labels'])
 
 from torch.utils.data import DataLoader
