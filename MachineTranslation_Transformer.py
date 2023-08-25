@@ -61,10 +61,13 @@ class Transformer(nn.Module):
     def create_mask(self,src):
         src_mask = src == self.src_pad_idx
         return src_mask
+
+
     def forward(self,src,trg):
         N,src_seq_length= src.shape
         N,trg_seq_length= trg.shape
         src_mask = self.create_mask(src)
+        src_mask = src_mask.transpose(0,1)
         print('src_mask.shape:',src_mask.shape)
         print('src_mask:',src_mask)
         trg_mask = self.transformer.generate_square_subsequent_mask(trg_seq_length).to(self.device)
@@ -75,25 +78,18 @@ class Transformer(nn.Module):
 
         trg_positions = (torch.arange(0,trg_seq_length).unsqueeze(1).expand(trg_seq_length,N).to(self.device))
 
-        print('src_positions.shape:',src_positions.shape)
         src_positions = src_positions.transpose(0,1)
         trg_positions = trg_positions.transpose(0,1)
-        print('src_positions.shape:',src_positions.shape)
-        print('src.shape:',src.shape)
+
         src_embedded = self.dropout(self.src_word_embedding(src) + self.src_position_embedding(src_positions)) # input
         trg_embedded = self.dropout(self.trg_word_embedding(trg) + self.trg_position_embedding(trg_positions)) # target
 
-        ###debug
-        print('debug\n')
-        print(f'src_embedded.shape:{src_embedded.shape}')
-        print(f'trg_embedded.shape:{trg_embedded.shape}')
-        print(f'src_mask.shape:{src_mask.shape}')
-        print(f'trg_mask.shape:{trg_mask.shape}')
 
         out = self.transformer(
             src=src_embedded,
             tgt=trg_embedded,
-            src_mask=src_mask,
+            src_key_padding_mask=src_mask,
+            src_mask=None,
             tgt_mask=trg_mask
         )
         out = self.fc_out(out)
@@ -163,6 +159,7 @@ for epoch in range(num_epochs):
         input_ids = batch['input_ids'].to(device)
         labels = batch['labels'].to(device)
         output = model(input_ids, labels)
+        print('*'*10)
         output = output.reshape(-1, output.shape[2])
         optimizer.zero_grad()
         loss = loss_fn(output, labels)
