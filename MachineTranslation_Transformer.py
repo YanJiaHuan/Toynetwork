@@ -68,21 +68,12 @@ class Transformer(nn.Module):
         N,src_seq_length= src.shape
         N,trg_seq_length= trg.shape
         src_mask = self.create_mask(src)
-        print('src_mask.shape:',src_mask.shape)
-        print('src_mask:',src_mask)
         trg_mask = self.transformer.generate_square_subsequent_mask(trg_seq_length).to(self.device)
-        print(src_mask.shape)  # Check the shape of the src_mask
-        print(trg_mask.shape)  # Check the shape of the trg_mask
-
         src_positions = (torch.arange(0,src_seq_length).unsqueeze(1).expand(src_seq_length,N).to(self.device))
-
         trg_positions = (torch.arange(0,trg_seq_length).unsqueeze(1).expand(trg_seq_length,N).to(self.device))
-
         src_positions = src_positions.transpose(0,1)
         trg_positions = trg_positions.transpose(0,1)
-
         src_embedded = self.dropout(self.src_word_embedding(src) + self.src_position_embedding(src_positions)) # input
-        print('src_embedded.shape:',src_embedded.shape)
         trg_embedded = self.dropout(self.trg_word_embedding(trg) + self.trg_position_embedding(trg_positions)) # target
 
 
@@ -102,9 +93,9 @@ class Transformer(nn.Module):
 ### train ###
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 ## hyperparameters ##
-num_epochs = 10
+num_epochs = 20
 learning_rate = 3e-6
-batch_size = 32
+batch_size = 256
 src_vocab_size = en_tokenizer.vocab_size
 trg_vocab_size = ge_tokenizer.vocab_size
 src_pad_idx = en_tokenizer.pad_token_id
@@ -159,14 +150,15 @@ for epoch in range(num_epochs):
     for i, batch in enumerate(train_loader):
         input_ids = batch['input_ids'].to(device)
         labels = batch['labels'].to(device)
-        print('input_ids.shape:',input_ids.shape)
-        print('labels.shape:',labels.shape)
+        # input_ids shape: (batch_size, seq_length)-->(32,128)
+        # labels shape: (batch_size, seq_length)-->(32,128)
         output = model(input_ids, labels)
-        print('*'*10)
-        output = output.reshape(-1, output.shape[2])
+
+        # output.shape: torch.Size([32, 128, 30000])
+        output = output.view(-1, output.shape[-1])
+        labels = labels.view(-1)
         optimizer.zero_grad()
-        print('output.shape:',output.shape)
-        print('labels.shape:',labels.shape)
+
         loss = loss_fn(output, labels)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
