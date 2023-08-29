@@ -64,6 +64,7 @@ class Transformer(nn.Module):
 
 
     def forward(self,src,trg):
+        print('src.shape:',src.shape)
         N,src_seq_length= src.shape
         N,trg_seq_length= trg.shape
         src_mask = self.create_mask(src)
