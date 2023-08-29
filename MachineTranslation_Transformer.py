@@ -163,6 +163,8 @@ for epoch in range(num_epochs):
         print('*'*10)
         output = output.reshape(-1, output.shape[2])
         optimizer.zero_grad()
+        print('output.shape:',output.shape)
+        print('labels.shape:',labels.shape)
         loss = loss_fn(output, labels)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
