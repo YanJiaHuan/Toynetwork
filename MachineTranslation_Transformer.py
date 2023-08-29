@@ -36,7 +36,7 @@ class Transformer(nn.Module):
             forward_expansion,
             num_heads,
             dropout,
-            max_length
+            max_length,
     ):
         super(Transformer,self).__init__()
         self.src_word_embedding = nn.Embedding(src_vocab_size,embed_size)
@@ -50,7 +50,8 @@ class Transformer(nn.Module):
             num_encoder_layers=num_encoder_layers,
             num_decoder_layers=num_decoder_layers,
             dim_feedforward=forward_expansion*embed_size,
-            dropout=dropout
+            dropout=dropout,
+            batch_first=True
         )
         self.fc_out = nn.Linear(embed_size,trg_vocab_size)
         self.dropout = nn.Dropout(dropout)
@@ -64,11 +65,9 @@ class Transformer(nn.Module):
 
 
     def forward(self,src,trg):
-        print('src.shape:',src.shape)
         N,src_seq_length= src.shape
         N,trg_seq_length= trg.shape
         src_mask = self.create_mask(src)
-        src_mask = src_mask.transpose(0,1)
         print('src_mask.shape:',src_mask.shape)
         print('src_mask:',src_mask)
         trg_mask = self.transformer.generate_square_subsequent_mask(trg_seq_length).to(self.device)
@@ -83,6 +82,7 @@ class Transformer(nn.Module):
         trg_positions = trg_positions.transpose(0,1)
 
         src_embedded = self.dropout(self.src_word_embedding(src) + self.src_position_embedding(src_positions)) # input
+        print('src_embedded.shape:',src_embedded.shape)
         trg_embedded = self.dropout(self.trg_word_embedding(trg) + self.trg_position_embedding(trg_positions)) # target
 
 
