@@ -159,6 +159,8 @@ for epoch in range(num_epochs):
     for i, batch in enumerate(train_loader):
         input_ids = batch['input_ids'].to(device)
         labels = batch['labels'].to(device)
+        print('input_ids.shape:',input_ids.shape)
+        print('labels.shape:',labels.shape)
         output = model(input_ids, labels)
         print('*'*10)
         output = output.reshape(-1, output.shape[2])
