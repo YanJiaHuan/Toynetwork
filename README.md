@@ -57,3 +57,8 @@ Bert-large: 340M parameters, Bert-base: 110M parameters.
 x = Bert-base.para, y = Bert-large.para
 y = (24/12) * (1024/768) * x = 2.67x   
 110M * 2.67 = 293.7M, which is close to 340M, normally there will be some other parameters inside.
+
+#### Notice:
+This code snippet is customized from the [Youtube turtorial](https://www.youtube.com/watch?v=M6adRGJe5cQ&t=697s), but the
+Pytorch version is 0.8 then, but mine is 2.0.1, which means some codes need to be changed (e.g., the Field, BucketIterator, etc. were removed).
+Also, in Transformer Class, need to use src_key_padding_mask instead of src_mask, batch_first=True to make sure N is the first element in dimensions.
