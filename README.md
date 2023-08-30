@@ -62,3 +62,22 @@ y = (24/12) * (1024/768) * x = 2.67x
 This code snippet is customized from the [Youtube turtorial](https://www.youtube.com/watch?v=M6adRGJe5cQ&t=697s), but the
 Pytorch version is 0.8 then, but mine is 2.0.1, which means some codes need to be changed (e.g., the Field, BucketIterator, etc. were removed).
 Also, in Transformer Class, need to use src_key_padding_mask instead of src_mask, batch_first=True to make sure N is the first element in dimensions.
+
+## About T5:
+In original T5 checkpoint (if you directly load their model from huggingface), the model.config.task_specific_params is something like this:  
+```json
+{'summarization': {'early_stopping': True, 'length_penalty': 2.0, 'max_length': 200, 'min_length': 30, 'no_repeat_ngram_size': 3, 'num_beams': 4, 'prefix': 'summarize: '}, 'translation_en_to_de': {'early_stopping': True, 'max_length': 300, 'num_beams': 4, 'prefix': 'translate English to German: '}, 'translation_en_to_fr': {'early_stopping': True, 'max_length': 300, 'num_beams': 4, 'prefix': 'translate English to French: '}, 'translation_en_to_ro': {'early_stopping': True, 'max_length': 300, 'num_beams': 4, 'prefix': 'translate English to Romanian: '}}
+```
+According to their own sayings: if your task is similar to this pretrained tasks, can keep the prefix, and they also declaimed that whether keep or not won't affect the model's performance.  
+But if you ever seen the Picard's codes, you will find they remove all the prefix (None), and that makes their own model can converge faster on text2sql task.  
+
+
+
+
+
+
+
+
+
+
+
