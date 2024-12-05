@@ -1,6 +1,30 @@
 # Toynetwork
 This is a repo for building NNs from scratch.
 
+## Table of Contents
+
+1. [Project Setup](#1-create-conda-env-for-your-project)
+   - [1.1 Use Mamba Instead of Vanilla Conda](#11-use-mamba-instead-of-vanilla-conda)
+   - [1.2 Install PyTorch](#12-install-pytorch)
+
+2. [Neural Network Models](#2-rnn)
+   - [2.1 Recurrent Neural Networks (RNN)](#21-rnn)
+   - [2.2 Transformer Networks](#22-transformer)
+     - [Encoder Part](#encoder-part)
+     - [Decoder Part](#decoder-part)
+     - [Positional Encoding](#positional-encoding)
+     - [Num_Layers](#num_layers)
+     - [Num_Heads](#num_heads)
+   - [2.3 T5](#about-t5)
+   - [2.4 Swin Transformer vs Transformer](#swin-transformer-vs-transformer)
+
+3. [Transformer Machine Translation](#transformer-machine-translation)
+
+4. [Benchmark](#benchmark)
+
+---
+
+
 ## 1. Create conda env for your project
 ### 1.1 Use Mamba instead of vanilla conda
 `Mamba install` will install the packages farster than `Conda install` and `pip install` \
@@ -97,7 +121,7 @@ But if you ever seen the Picard's codes, you will find they remove all the prefi
 [Swin Transformer](https://openaccess.thecvf.com/content/ICCV2021/html/Liu_Swin_Transformer_Hierarchical_Vision_Transformer_Using_Shifted_Windows_ICCV_2021_paper) is proposed to really make transformer more adaptive to image input, compare with [Vit](https://arxiv.org/abs/2010.11929), it is described as CNN formated Transformer, can handle downstream tasks like clssfication, segmantation, tracking and so on.
 
 
-
+## Benchmark
 
 
 
