@@ -1,0 +1,1 @@
+% assume you are cuda 12.6

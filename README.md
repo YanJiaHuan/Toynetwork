@@ -1,5 +1,27 @@
 # Toynetwork
 This is a repo for building NNs from scratch.
+
+## 1. Create conda env for your project
+### 1.1 Use Mamba instead of vanilla conda
+`Mamba install` will install the packages farster than `Conda install` and `pip install` \
+<ins> Mamba is now depricated in Mambaforge, use Miniforge instead </ins> \
+Step 0: Download [Miniforge.sh](https://github.com/conda-forge/miniforge/releases/tag/) \
+Step 1: install by calling: 
+```shell
+bash Miniforge.sh % check the file name
+```
+Step 2: command to source the conda env:
+```shell
+conda init
+source ~/.bashrc
+```
+### 1.2 install pytorch
+Assume you are using cuda-12.6:
+```shell
+mamba install pytorch torchvision torchaudio pytorch-cuda=12.* -c pytorch -c nvidia
+```
+
+
 ## RNN
 ### Advantages
 - Can handle variable length sequences.
@@ -71,7 +93,8 @@ In original T5 checkpoint (if you directly load their model from huggingface), t
 According to their own sayings: if your task is similar to this pretrained tasks, can keep the prefix, and they also declaimed that whether keep or not won't affect the model's performance.  
 But if you ever seen the Picard's codes, you will find they remove all the prefix (None), and that makes their own model can converge faster on text2sql task.  
 
-
+## Swin Transformer vs Transformer
+[Swin Transformer](https://openaccess.thecvf.com/content/ICCV2021/html/Liu_Swin_Transformer_Hierarchical_Vision_Transformer_Using_Shifted_Windows_ICCV_2021_paper) is proposed to really make transformer more adaptive to image input, compare with [Vit](https://arxiv.org/abs/2010.11929), it is described as CNN formated Transformer, can handle downstream tasks like clssfication, segmantation, tracking and so on.
 
 
 
