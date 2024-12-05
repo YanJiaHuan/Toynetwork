@@ -122,6 +122,12 @@ But if you ever seen the Picard's codes, you will find they remove all the prefi
 
 
 ## Benchmark
+### 1. COCO: Common Obejcts in Context:
+[COCO](https://cocodataset.org/#home) is widely used, the leaderboard can be find [here](https://paperswithcode.com/sota/object-detection-on-coco), detectron2 is a easily used framework.
+```shell
+pip install pycocotools
+pip install detectron2
+```
 
 
 

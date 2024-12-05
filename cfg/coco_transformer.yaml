@@ -1,0 +1,23 @@
+model:
+  module: "/home/jiahuan/workspace/Toynetwork/model/transformer.py"          # Python file containing the model
+  class: "VanillaTransformer" # Model class name
+  params:                     # Model-specific hyperparameters
+    embed_dim: 128
+    num_heads: 4
+    num_layers: 2
+    num_classes: 10
+
+detectron2:
+  config_file: "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"
+  datasets:
+    train: ["coco_train"]
+    test: ["coco_val"]
+  dataloader:
+    num_workers: 4
+  solver:
+    ims_per_batch: 2
+    base_lr: 0.00025
+    max_iter: 300
+  model:
+    num_classes: 10
+  output_dir: "./output"
