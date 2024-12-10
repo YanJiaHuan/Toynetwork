@@ -29,7 +29,7 @@ This is a repo for building NNs from scratch.
 ### 1.1 Use Mamba instead of vanilla conda
 `Mamba install` will install the packages farster than `Conda install` and `pip install` \
 <ins> Mamba is now depricated in Mambaforge, use Miniforge instead </ins> \
-Step 0: Download [Miniforge.sh](https://github.com/conda-forge/miniforge/releases/tag/) \
+Step 0: Download [Miniforge.sh](https://github.com/conda-forge/miniforge/releases) \
 Step 1: install by calling: 
 ```shell
 bash Miniforge.sh % check the file name
